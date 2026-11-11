@@ -50,6 +50,9 @@ interface AppContextType {
     birthYear: number;
     gender: 'Nam' | 'Nữ' | 'Khác';
     symptoms: string;
+    medicalHistory: string;
+    allergyHistory: string;
+    currentMedications: string;
   }) => { appointment: Appointment; notification: ZnsNotification };
   assignDoctor: (appointmentId: string, doctorId: string) => void;
   updateAppointmentStatus: (appointmentId: string, status: AppointmentStatus) => void;
@@ -204,6 +207,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     birthYear: number;
     gender: 'Nam' | 'Nữ' | 'Khác';
     symptoms: string;
+    medicalHistory: string;
+    allergyHistory: string;
+    currentMedications: string;
   }) => {
     const newId = `IV-CT-2026-${String(appointments.length + 1).padStart(3, '0')}`;
     const now = new Date();
@@ -231,7 +237,10 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         birthYear: data.birthYear,
         gender: data.gender,
         bloodType: 'Chưa xác định',
-        allergies: 'Không ghi nhận',
+        allergies: data.allergyHistory || 'Không ghi nhận',
+        medicalHistory: data.medicalHistory,
+        allergyHistory: data.allergyHistory,
+        currentMedications: data.currentMedications,
         totalSpent: minTotal,
         registeredAt: formattedNow.split(' ')[0],
       };
@@ -239,7 +248,15 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     } else {
       setPatients((prev) =>
         prev.map((p) =>
-          p.id === patient!.id ? { ...p, totalSpent: p.totalSpent + minTotal } : p
+          p.id === patient!.id
+            ? {
+                ...p,
+                totalSpent: p.totalSpent + minTotal,
+                medicalHistory: data.medicalHistory || p.medicalHistory,
+                allergyHistory: data.allergyHistory || p.allergyHistory,
+                currentMedications: data.currentMedications || p.currentMedications,
+              }
+            : p
         )
       );
     }
@@ -268,6 +285,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       date: data.date,
       timeSlot: data.timeSlot,
       symptoms: data.symptoms,
+      medicalHistory: data.medicalHistory,
+      allergyHistory: data.allergyHistory,
+      currentMedications: data.currentMedications,
       status: 'pending',
       doctorId: 'doc-phuc',
       doctorName: 'BS. Phúc (0969799467)',

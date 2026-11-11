@@ -250,6 +250,28 @@ export const DoctorView: React.FC = () => {
                         <span>{formatDate(apt.date)} ({apt.timeSlot})</span>
                       </div>
 
+                      {/* KHUNG THÔNG TIN SÀNG LỌC Y TẾ NỔI BẬT TRÊN THẺ */}
+                      <div className="bg-rose-50/70 border border-rose-200 rounded-xl p-2.5 text-[11px] space-y-1">
+                        <div className="font-extrabold text-rose-900 flex items-center gap-1">
+                          <span className="w-3.5 h-3.5 rounded-full bg-rose-600 text-white text-[9px] flex items-center justify-center font-bold">!</span>
+                          <span>Sàng lọc an toàn y tế bắt buộc:</span>
+                        </div>
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-1.5 text-slate-700">
+                          <div>
+                            <span className="text-slate-500 font-semibold">• Bệnh nền: </span>
+                            <span className="font-bold text-slate-900">{apt.medicalHistory || 'Không ghi nhận'}</span>
+                          </div>
+                          <div>
+                            <span className="text-slate-500 font-semibold">• Dị ứng: </span>
+                            <span className="font-bold text-rose-600">{apt.allergyHistory || 'Không dị ứng'}</span>
+                          </div>
+                          <div>
+                            <span className="text-slate-500 font-semibold">• Đang dùng thuốc: </span>
+                            <span className="font-bold text-slate-900">{apt.currentMedications || 'Không dùng thuốc'}</span>
+                          </div>
+                        </div>
+                      </div>
+
                       <p className="text-slate-700 text-xs bg-slate-50 p-2 rounded-lg border border-slate-100 italic">
                         <strong className="not-italic text-slate-800">Triệu chứng khai báo: </strong>
                         "{apt.symptoms}"

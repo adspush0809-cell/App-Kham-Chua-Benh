@@ -183,12 +183,29 @@ export const CustomerDirectoryTab: React.FC = () => {
               </div>
               <div className="grid grid-cols-2 gap-2 pt-2 border-t border-slate-200">
                 <div>
-                  <span className="text-slate-400 block">Dị ứng thuốc:</span>
-                  <span className="font-semibold text-rose-700">{selectedPatient.allergies}</span>
-                </div>
-                <div>
                   <span className="text-slate-400 block">Tổng chi phí tích lũy:</span>
                   <span className="font-black text-emerald-700 text-sm">{formatVND(selectedPatient.totalSpent)}</span>
+                </div>
+              </div>
+
+              {/* SÀNG LỌC AN TOÀN Y TẾ */}
+              <div className="pt-2 border-t border-slate-200 space-y-1.5">
+                <span className="text-[11px] font-bold text-amber-800 uppercase tracking-wider block">
+                  ⚠️ Thông tin sàng lọc an toàn y tế:
+                </span>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 bg-white p-2.5 rounded-lg border border-amber-200">
+                  <div>
+                    <span className="text-[10px] text-slate-500 font-bold block">Tiền sử bệnh:</span>
+                    <span className="font-semibold text-slate-800">{selectedPatient.medicalHistory || 'Không có'}</span>
+                  </div>
+                  <div>
+                    <span className="text-[10px] text-rose-600 font-bold block">Tiền sử dị ứng:</span>
+                    <span className="font-bold text-rose-700">{selectedPatient.allergyHistory || selectedPatient.allergies || 'Không dị ứng'}</span>
+                  </div>
+                  <div>
+                    <span className="text-[10px] text-slate-500 font-bold block">Thuốc đang dùng:</span>
+                    <span className="font-semibold text-slate-800">{selectedPatient.currentMedications || 'Không dùng thuốc'}</span>
+                  </div>
                 </div>
               </div>
             </div>

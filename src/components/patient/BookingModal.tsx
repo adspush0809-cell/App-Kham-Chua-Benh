@@ -69,6 +69,9 @@ export const BookingModal: React.FC<BookingModalProps> = ({
   const [birthYear, setBirthYear] = useState<number>(currentPatient?.birthYear || 1990);
   const [gender, setGender] = useState<'Nam' | 'Nữ' | 'Khác'>(currentPatient?.gender || 'Nam');
   const [symptoms, setSymptoms] = useState<string>('');
+  const [medicalHistory, setMedicalHistory] = useState<string>(currentPatient?.medicalHistory || '');
+  const [allergyHistory, setAllergyHistory] = useState<string>(currentPatient?.allergyHistory || '');
+  const [currentMedications, setCurrentMedications] = useState<string>(currentPatient?.currentMedications || '');
   const [errorMessage, setErrorMessage] = useState<string>('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -117,6 +120,18 @@ export const BookingModal: React.FC<BookingModalProps> = ({
       setErrorMessage('Vui lòng chọn ngày mong muốn truyền dịch.');
       return;
     }
+    if (!medicalHistory.trim()) {
+      setErrorMessage('Vui lòng nhập mục "Tiền sử bệnh *" (hoặc ghi "Không có" nếu hoàn toàn khỏe mạnh).');
+      return;
+    }
+    if (!allergyHistory.trim()) {
+      setErrorMessage('Vui lòng nhập mục "Tiền sử dị ứng *" (hoặc ghi "Không dị ứng" nếu không có).');
+      return;
+    }
+    if (!currentMedications.trim()) {
+      setErrorMessage('Vui lòng nhập mục "Thuốc đang sử dụng *" (hoặc ghi "Không dùng thuốc" nếu không uống gì).');
+      return;
+    }
 
     setIsSubmitting(true);
 
@@ -132,6 +147,9 @@ export const BookingModal: React.FC<BookingModalProps> = ({
         birthYear: Number(birthYear),
         gender,
         symptoms: symptoms.trim() || 'Cần bác sĩ đến khám và truyền dịch phục hồi tại nhà.',
+        medicalHistory: medicalHistory.trim(),
+        allergyHistory: allergyHistory.trim(),
+        currentMedications: currentMedications.trim(),
       });
 
       setIsSubmitting(false);
@@ -414,6 +432,137 @@ export const BookingModal: React.FC<BookingModalProps> = ({
                   + {sugg}
                 </button>
               ))}
+            </div>
+          </div>
+
+          {/* Section 5: THÔNG TIN SÀNG LỌC AN TOÀN Y TẾ (BẮT BUỘC NHẬP) */}
+          <div className="bg-gradient-to-br from-rose-50/80 via-amber-50/50 to-orange-50/60 border-2 border-rose-300 rounded-2xl p-4 sm:p-5 space-y-4 shadow-2xs">
+            <div className="flex items-start gap-2.5 border-b border-rose-200/90 pb-3">
+              <div className="w-8 h-8 rounded-xl bg-rose-600 text-white flex items-center justify-center font-black text-sm shrink-0 shadow-sm">
+                5
+              </div>
+              <div>
+                <h3 className="font-extrabold text-sm sm:text-base text-rose-950 uppercase tracking-tight flex items-center gap-1.5">
+                  <span>5. Thông Tin Sàng Lọc An Toàn Y Tế</span>
+                  <span className="text-rose-600 text-xs font-black bg-rose-100 border border-rose-300 px-2 py-0.2 rounded-full">
+                    BẮT BUỘC NHẬP *
+                  </span>
+                </h3>
+                <p className="text-xs text-rose-800 mt-0.5 leading-relaxed">
+                  BS. Phúc yêu cầu khai báo chi tiết để thẩm định chỉ định dịch truyền, đảm bảo an toàn tuyệt đối và ngăn ngừa nguy cơ sốc hoặc tương tác thuốc.
+                </p>
+              </div>
+            </div>
+
+            {/* Ô nhập 1 - Tiền sử bệnh */}
+            <div className="space-y-1.5 bg-white p-3.5 rounded-xl border border-rose-200 shadow-2xs">
+              <div className="flex items-center justify-between">
+                <label className="text-xs font-bold text-slate-900 flex items-center gap-1">
+                  <span>Tiền sử bệnh</span>
+                  <span className="text-rose-600 font-extrabold text-sm">*</span>
+                </label>
+                <span className="text-[10px] font-semibold text-rose-600 bg-rose-50 px-1.5 py-0.5 rounded border border-rose-200">
+                  Bắt buộc
+                </span>
+              </div>
+              <p className="text-[11px] text-slate-600">
+                Trước giờ bệnh nhân có bệnh gì khác như huyết áp, tiểu đường hay đau dạ dày không?
+              </p>
+              <textarea
+                rows={2}
+                required
+                placeholder="Nhập rõ các bệnh nền đang mắc (VD: Cao huyết áp, tiểu đường, đau dạ dày...) hoặc ghi 'Không có' nếu hoàn toàn khỏe mạnh."
+                value={medicalHistory}
+                onChange={(e) => setMedicalHistory(e.target.value)}
+                className="w-full text-xs font-medium text-slate-800 bg-slate-50/70 border border-slate-300 rounded-xl p-2.5 focus:bg-white focus:outline-none focus:ring-2 focus:ring-rose-500/30 focus:border-rose-500"
+              />
+              <div className="flex flex-wrap items-center gap-1 pt-0.5">
+                <span className="text-[10px] text-slate-400">Gợi ý nhanh:</span>
+                {['Không có', 'Cao huyết áp', 'Tiểu đường type 2', 'Đau dạ dày / Trào ngược dạ dày', 'Bệnh tim mạch'].map((sugg, i) => (
+                  <button
+                    key={i}
+                    type="button"
+                    onClick={() => setMedicalHistory((prev) => (prev ? `${prev}, ${sugg}` : sugg))}
+                    className="text-[10px] bg-slate-100 hover:bg-slate-200 text-slate-700 px-2 py-0.5 rounded border border-slate-200 cursor-pointer transition"
+                  >
+                    + {sugg}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Ô nhập 2 - Tiền sử dị ứng */}
+            <div className="space-y-1.5 bg-white p-3.5 rounded-xl border border-rose-200 shadow-2xs">
+              <div className="flex items-center justify-between">
+                <label className="text-xs font-bold text-slate-900 flex items-center gap-1">
+                  <span>Tiền sử dị ứng</span>
+                  <span className="text-rose-600 font-extrabold text-sm">*</span>
+                </label>
+                <span className="text-[10px] font-semibold text-rose-600 bg-rose-50 px-1.5 py-0.5 rounded border border-rose-200">
+                  Bắt buộc
+                </span>
+              </div>
+              <p className="text-[11px] text-slate-600">
+                Bệnh nhân có dị ứng thuốc hay thức ăn gì không?
+              </p>
+              <textarea
+                rows={2}
+                required
+                placeholder="Ghi rõ tên thuốc hoặc thức ăn từng gây dị ứng (VD: Dị ứng thuốc giảm đau Paracetamol, kháng sinh, hải sản...) hoặc ghi 'Không dị ứng'."
+                value={allergyHistory}
+                onChange={(e) => setAllergyHistory(e.target.value)}
+                className="w-full text-xs font-medium text-slate-800 bg-slate-50/70 border border-slate-300 rounded-xl p-2.5 focus:bg-white focus:outline-none focus:ring-2 focus:ring-rose-500/30 focus:border-rose-500"
+              />
+              <div className="flex flex-wrap items-center gap-1 pt-0.5">
+                <span className="text-[10px] text-slate-400">Gợi ý nhanh:</span>
+                {['Không dị ứng', 'Dị ứng kháng sinh Penicillin', 'Dị ứng thuốc Paracetamol', 'Dị ứng hải sản (tôm, cua)'].map((sugg, i) => (
+                  <button
+                    key={i}
+                    type="button"
+                    onClick={() => setAllergyHistory((prev) => (prev ? `${prev}, ${sugg}` : sugg))}
+                    className="text-[10px] bg-slate-100 hover:bg-slate-200 text-slate-700 px-2 py-0.5 rounded border border-slate-200 cursor-pointer transition"
+                  >
+                    + {sugg}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Ô nhập 3 - Thuốc đang sử dụng */}
+            <div className="space-y-1.5 bg-white p-3.5 rounded-xl border border-rose-200 shadow-2xs">
+              <div className="flex items-center justify-between">
+                <label className="text-xs font-bold text-slate-900 flex items-center gap-1">
+                  <span>Thuốc đang sử dụng</span>
+                  <span className="text-rose-600 font-extrabold text-sm">*</span>
+                </label>
+                <span className="text-[10px] font-semibold text-rose-600 bg-rose-50 px-1.5 py-0.5 rounded border border-rose-200">
+                  Bắt buộc
+                </span>
+              </div>
+              <p className="text-[11px] text-slate-600">
+                Có đang sử dụng thuốc gì không?
+              </p>
+              <textarea
+                rows={2}
+                required
+                placeholder="Liệt kê các loại thuốc đang uống hằng ngày (kể cả thuốc nam, thực phẩm chức năng) hoặc ghi 'Không dùng thuốc'."
+                value={currentMedications}
+                onChange={(e) => setCurrentMedications(e.target.value)}
+                className="w-full text-xs font-medium text-slate-800 bg-slate-50/70 border border-slate-300 rounded-xl p-2.5 focus:bg-white focus:outline-none focus:ring-2 focus:ring-rose-500/30 focus:border-rose-500"
+              />
+              <div className="flex flex-wrap items-center gap-1 pt-0.5">
+                <span className="text-[10px] text-slate-400">Gợi ý nhanh:</span>
+                {['Không dùng thuốc', 'Thuốc huyết áp (Amlodipine/Losartan)', 'Thuốc tiểu đường (Metformin)', 'Thuốc dạ dày (Nexium/Omeprazole)', 'Thực phẩm chức năng / Vitamin'].map((sugg, i) => (
+                  <button
+                    key={i}
+                    type="button"
+                    onClick={() => setCurrentMedications((prev) => (prev ? `${prev}, ${sugg}` : sugg))}
+                    className="text-[10px] bg-slate-100 hover:bg-slate-200 text-slate-700 px-2 py-0.5 rounded border border-slate-200 cursor-pointer transition"
+                  >
+                    + {sugg}
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
 

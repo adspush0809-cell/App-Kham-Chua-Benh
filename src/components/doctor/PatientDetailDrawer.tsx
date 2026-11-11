@@ -84,7 +84,53 @@ export const PatientDetailDrawer: React.FC<PatientDetailDrawerProps> = ({
         </div>
 
         {/* Drawer Body */}
-        <div className="p-5 flex-1 overflow-y-auto space-y-6">
+        <div className="p-5 flex-1 overflow-y-auto space-y-5">
+          {/* KHUNG THÔNG TIN SÀNG LỌC Y TẾ NỔI BẬT CHO BÁC SĨ (Required) */}
+          <div className="bg-gradient-to-br from-rose-50 via-amber-50 to-orange-50 border-2 border-rose-300 rounded-2xl p-4 space-y-3 shadow-xs">
+            <div className="flex items-center justify-between border-b border-rose-200/90 pb-2">
+              <div className="flex items-center gap-2">
+                <span className="w-6 h-6 rounded-lg bg-rose-600 text-white flex items-center justify-center font-bold text-xs">
+                  !
+                </span>
+                <span className="font-extrabold text-xs sm:text-sm text-rose-950 uppercase tracking-tight">
+                  Thông Tin Sàng Lọc An Toàn Y Tế (BS. Phúc Đọc Kỹ Trước Khi Truyền)
+                </span>
+              </div>
+              <span className="text-[10px] font-bold text-rose-700 bg-rose-100 border border-rose-300 px-2 py-0.5 rounded-full">
+                Sàng lọc bắt buộc
+              </span>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 text-xs">
+              <div className="bg-white p-2.5 rounded-xl border border-rose-200 space-y-1">
+                <span className="font-bold text-slate-800 text-[11px] block text-rose-900">
+                  1. Tiền sử bệnh nền:
+                </span>
+                <p className="font-semibold text-slate-900 leading-snug">
+                  {appointment.medicalHistory || 'Không ghi nhận'}
+                </p>
+              </div>
+
+              <div className="bg-white p-2.5 rounded-xl border border-rose-200 space-y-1">
+                <span className="font-bold text-slate-800 text-[11px] block text-rose-900">
+                  2. Tiền sử dị ứng:
+                </span>
+                <p className="font-bold text-rose-600 leading-snug">
+                  {appointment.allergyHistory || 'Không dị ứng'}
+                </p>
+              </div>
+
+              <div className="bg-white p-2.5 rounded-xl border border-rose-200 space-y-1">
+                <span className="font-bold text-slate-800 text-[11px] block text-rose-900">
+                  3. Thuốc đang sử dụng:
+                </span>
+                <p className="font-semibold text-slate-900 leading-snug">
+                  {appointment.currentMedications || 'Không dùng thuốc'}
+                </p>
+              </div>
+            </div>
+          </div>
+
           {/* Patient Masked Info Card */}
           <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 space-y-3">
             <div className="flex items-center justify-between border-b border-slate-200/80 pb-2">

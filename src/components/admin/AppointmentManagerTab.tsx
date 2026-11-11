@@ -216,6 +216,34 @@ export const AppointmentManagerTab: React.FC = () => {
                   </div>
                 </div>
 
+                {/* THÔNG TIN SÀNG LỌC AN TOÀN Y TẾ CHO BÁC SĨ & ADMIN */}
+                <div className="bg-amber-50/80 border border-amber-300/80 rounded-xl p-3.5 space-y-2">
+                  <div className="flex items-center gap-1.5 text-amber-900 font-bold text-xs uppercase tracking-wider">
+                    <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
+                    <span>Thông Tin Sàng Lọc An Toàn Y Tế (BS. Phúc xem trước khi truyền)</span>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-2 text-xs">
+                    <div className="bg-white p-2.5 rounded-lg border border-amber-200">
+                      <span className="text-[10px] uppercase font-bold text-slate-500 block">1. Tiền sử bệnh nền:</span>
+                      <span className="font-semibold text-slate-900 mt-0.5 block">
+                        {apt.medicalHistory || 'Không có'}
+                      </span>
+                    </div>
+                    <div className="bg-white p-2.5 rounded-lg border border-amber-200">
+                      <span className="text-[10px] uppercase font-bold text-rose-600 block">2. Tiền sử dị ứng thuốc/thức ăn:</span>
+                      <span className="font-bold text-rose-700 mt-0.5 block">
+                        {apt.allergyHistory || 'Không dị ứng'}
+                      </span>
+                    </div>
+                    <div className="bg-white p-2.5 rounded-lg border border-amber-200">
+                      <span className="text-[10px] uppercase font-bold text-slate-500 block">3. Thuốc đang sử dụng:</span>
+                      <span className="font-semibold text-slate-900 mt-0.5 block">
+                        {apt.currentMedications || 'Không dùng thuốc'}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
                 {/* Details & Symptoms */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
                   {/* Left: Schedule & Requested Services */}

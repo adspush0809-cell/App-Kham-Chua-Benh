@@ -93,6 +93,9 @@ export interface Appointment {
   date: string;
   timeSlot: string;
   symptoms: string;
+  medicalHistory: string; // Tiền sử bệnh nền (Bắt buộc)
+  allergyHistory: string; // Tiền sử dị ứng (Bắt buộc)
+  currentMedications: string; // Thuốc đang sử dụng (Bắt buộc)
   status: AppointmentStatus;
   doctorId?: string;
   doctorName?: string;
@@ -124,6 +127,9 @@ export interface PatientProfile {
   gender: 'Nam' | 'Nữ' | 'Khác';
   bloodType: string;
   allergies: string;
+  medicalHistory: string; // Tiền sử bệnh nền
+  allergyHistory: string; // Tiền sử dị ứng
+  currentMedications: string; // Thuốc đang sử dụng
   totalSpent: number;
   registeredAt: string;
 }
