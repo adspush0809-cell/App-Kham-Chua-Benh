@@ -25,12 +25,12 @@ const MainLayout: React.FC = () => {
   const { role, hotlinePhone } = useApp();
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col justify-between selection:bg-teal-600 selection:text-white">
+    <div className="min-h-screen bg-slate-50 flex flex-col justify-between selection:bg-teal-600 selection:text-white overflow-x-hidden w-full max-w-full">
       {/* Top Sticky Demo Role Switcher Toolbar */}
       <DemoRoleSwitcher />
 
       {/* Main Content Area */}
-      <main className="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-1">
+      <main className="max-w-7xl w-full mx-auto px-3.5 sm:px-6 lg:px-8 py-4 sm:py-6 flex-1 overflow-x-hidden">
         {role === 'patient' && <PatientView />}
         {role === 'doctor' && <DoctorView />}
         {role === 'admin' && <AdminView />}

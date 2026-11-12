@@ -155,50 +155,52 @@ export const NewMedicalRecordModal: React.FC<NewMedicalRecordModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-950/70 backdrop-blur-xs overflow-y-auto">
-      <div className="relative w-full max-w-3xl bg-white rounded-2xl shadow-2xl overflow-hidden border border-slate-200 my-auto">
-        {/* Header */}
-        <div className="bg-gradient-to-r from-teal-700 via-emerald-700 to-sky-800 px-6 py-4 text-white flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-white/20 backdrop-blur-md flex items-center justify-center text-white">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-0 md:p-4 bg-slate-950/80 backdrop-blur-xs overflow-hidden">
+      <div className="relative w-full h-full md:h-auto md:max-h-[92vh] max-w-3xl bg-white md:rounded-2xl shadow-2xl flex flex-col overflow-hidden border-0 md:border md:border-slate-200">
+        {/* Sticky Header */}
+        <div className="sticky top-0 z-20 shrink-0 bg-gradient-to-r from-teal-700 via-emerald-700 to-sky-800 px-4 sm:px-6 py-3.5 sm:py-4 text-white flex items-center justify-between shadow-xs">
+          <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
+            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-white/20 backdrop-blur-md flex items-center justify-center text-white shrink-0">
               <Droplets className="w-5 h-5" />
             </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <h2 className="text-base sm:text-lg font-bold">Ghi Phiếu Truyền Dịch &amp; Ký Số Điện Tử</h2>
+            <div className="min-w-0">
+              <div className="flex items-center gap-2 flex-wrap">
+                <h2 className="text-sm sm:text-base md:text-lg font-bold truncate">Ghi Phiếu Truyền Dịch &amp; Ký Số</h2>
                 <span className="bg-emerald-400/20 text-emerald-200 border border-emerald-400/30 text-[10px] font-bold px-2 py-0.5 rounded">
                   Quy chế Ký số
                 </span>
               </div>
-              <p className="text-xs text-teal-100">
+              <p className="text-xs text-teal-100 truncate">
                 Bệnh nhân: <span className="font-bold text-white">{appointment.patientName}</span> ({appointment.patientGender}, {appointment.patientBirthYear}) • {appointment.district}
               </p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="text-white/80 hover:text-white p-1 rounded-lg hover:bg-white/10 transition cursor-pointer"
+            className="text-white/80 hover:text-white p-2 rounded-xl hover:bg-white/10 transition cursor-pointer min-w-[44px] min-h-[44px] flex items-center justify-center shrink-0"
+            aria-label="Đóng"
           >
-            <X className="w-5 h-5" />
+            <X className="w-5 h-5 sm:w-6 sm:h-6" />
           </button>
         </div>
 
         {/* Warning banner */}
-        <div className="bg-amber-50 border-b border-amber-200 px-6 py-2.5 text-xs text-amber-800 flex items-center gap-2">
+        <div className="shrink-0 bg-amber-50 border-b border-amber-200 px-4 sm:px-6 py-2.5 text-xs text-amber-800 flex items-center gap-2">
           <Lock className="w-4 h-4 text-amber-600 shrink-0" />
-          <span>
-            <strong>Quy tắc khóa dữ liệu:</strong> Sau khi bấm "Lưu &amp; Khóa bệnh án vĩnh viễn", bản ghi sẽ được niêm phong. Không thể xóa hoặc chỉnh sửa sau khi lưu.
+          <span className="text-[11px] sm:text-xs">
+            <strong>Quy tắc khóa dữ liệu:</strong> Sau khi bấm "Lưu &amp; Khóa bệnh án", hồ sơ sẽ được niêm phong vĩnh viễn.
           </span>
         </div>
 
-        {/* Form Body */}
-        <form onSubmit={handleValidateAndPromptLock} className="p-6 space-y-5 max-h-[75vh] overflow-y-auto">
-          {validationError && (
-            <div className="bg-rose-50 border border-rose-200 text-rose-700 p-3 rounded-xl text-xs flex items-center gap-2 font-medium">
-              <AlertTriangle className="w-4 h-4 shrink-0" />
-              <span>{validationError}</span>
-            </div>
-          )}
+        {/* Form Body Container */}
+        <form onSubmit={handleValidateAndPromptLock} className="flex-1 flex flex-col min-h-0 overflow-hidden">
+          <div className="flex-1 overflow-y-auto overscroll-contain p-4 sm:p-6 space-y-5">
+            {validationError && (
+              <div className="bg-rose-50 border border-rose-300 text-rose-800 p-3.5 rounded-xl text-sm flex items-center gap-2.5 font-semibold shadow-xs">
+                <AlertTriangle className="w-5 h-5 text-rose-600 shrink-0" />
+                <span>{validationError}</span>
+              </div>
+            )}
 
           {/* Section 1: Vital signs before/after infusion */}
           <div>
@@ -440,20 +442,22 @@ export const NewMedicalRecordModal: React.FC<NewMedicalRecordModalProps> = ({
             </div>
           </div>
 
-          {/* Form Action Buttons */}
-          <div className="pt-3 flex items-center justify-end gap-3 border-t border-slate-200">
+          </div>
+
+          {/* Sticky Action Footer */}
+          <div className="sticky bottom-0 z-20 shrink-0 bg-white/95 backdrop-blur-md border-t border-slate-200 p-3 sm:p-4 shadow-lg flex items-center justify-between gap-2.5">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2.5 rounded-xl border border-slate-300 text-slate-700 text-xs font-semibold hover:bg-slate-50 transition cursor-pointer"
+              className="min-h-[48px] h-12 px-5 rounded-xl border border-slate-300 text-slate-700 text-sm font-semibold hover:bg-slate-50 transition cursor-pointer flex items-center justify-center"
             >
               Hủy
             </button>
             <button
               type="submit"
-              className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-700 hover:to-emerald-700 text-white text-xs font-bold shadow-md transition cursor-pointer flex items-center gap-2"
+              className="flex-1 sm:flex-none min-h-[48px] h-12 px-6 rounded-xl bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-700 hover:to-emerald-700 text-white text-sm sm:text-base font-bold shadow-md transition cursor-pointer flex items-center justify-center gap-2 active:scale-98"
             >
-              <Lock className="w-4 h-4" />
+              <Lock className="w-5 h-5 shrink-0" />
               <span>Lưu &amp; Khóa bệnh án vĩnh viễn</span>
             </button>
           </div>

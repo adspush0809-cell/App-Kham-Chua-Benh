@@ -128,18 +128,18 @@ export const DemoRoleSwitcher: React.FC = () => {
           </div>
         </div>
 
-        {/* 3 Role Selection Buttons */}
-        <div className="flex items-center bg-slate-800 p-1 rounded-xl border border-slate-700/80 shadow-inner">
+        {/* 3 Role Selection Buttons (Fully Responsive on Mobile) */}
+        <div className="flex items-center w-full sm:w-auto bg-slate-800 p-1 rounded-xl border border-slate-700/80 shadow-inner justify-between sm:justify-start gap-1">
           {/* Patient Role Button */}
           <button
             onClick={() => handleRoleChange('patient')}
-            className={`flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all cursor-pointer ${
+            className={`flex-1 sm:flex-none flex items-center justify-center gap-1.5 sm:gap-2 px-2.5 sm:px-3.5 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all cursor-pointer min-h-[40px] ${
               role === 'patient'
                 ? 'bg-gradient-to-r from-sky-500 to-teal-600 text-white shadow-md shadow-sky-500/25 ring-1 ring-sky-300/40'
                 : 'text-slate-300 hover:text-white hover:bg-slate-700/60'
             }`}
           >
-            <User className="w-4 h-4" />
+            <User className="w-4 h-4 shrink-0" />
             <span>Bệnh nhân</span>
             {role === 'patient' && <CheckCircle2 className="w-3.5 h-3.5 text-sky-200 hidden sm:inline" />}
           </button>
@@ -147,27 +147,27 @@ export const DemoRoleSwitcher: React.FC = () => {
           {/* Doctor Role Button */}
           <button
             onClick={() => handleRoleChange('doctor')}
-            className={`flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all cursor-pointer ${
+            className={`flex-1 sm:flex-none flex items-center justify-center gap-1.5 sm:gap-2 px-2.5 sm:px-3.5 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all cursor-pointer min-h-[40px] ${
               role === 'doctor'
                 ? 'bg-gradient-to-r from-teal-500 to-emerald-600 text-white shadow-md shadow-teal-500/25 ring-1 ring-teal-300/40'
                 : 'text-slate-300 hover:text-white hover:bg-slate-700/60'
             }`}
           >
-            <Stethoscope className="w-4 h-4" />
-            <span>Bác sĩ (BS. Phúc)</span>
+            <Stethoscope className="w-4 h-4 shrink-0" />
+            <span>Bác sĩ</span>
             {role === 'doctor' && <CheckCircle2 className="w-3.5 h-3.5 text-teal-200 hidden sm:inline" />}
           </button>
 
           {/* Admin Role Button */}
           <button
             onClick={() => handleRoleChange('admin')}
-            className={`flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all cursor-pointer ${
+            className={`flex-1 sm:flex-none flex items-center justify-center gap-1.5 sm:gap-2 px-2.5 sm:px-3.5 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all cursor-pointer min-h-[40px] ${
               role === 'admin'
                 ? 'bg-gradient-to-r from-indigo-500 to-purple-600 text-white shadow-md shadow-indigo-500/25 ring-1 ring-indigo-300/40'
                 : 'text-slate-300 hover:text-white hover:bg-slate-700/60'
             }`}
           >
-            <ShieldAlert className="w-4 h-4" />
+            <ShieldAlert className="w-4 h-4 shrink-0" />
             <span>Admin</span>
             {role === 'admin' && <CheckCircle2 className="w-3.5 h-3.5 text-indigo-200 hidden sm:inline" />}
           </button>

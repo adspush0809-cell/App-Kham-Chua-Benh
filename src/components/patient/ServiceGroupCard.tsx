@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { ServiceGroup, ServiceItem, SelectedServiceItem } from '../../types';
 import { formatVND } from '../../utils/formatters';
 import {
@@ -10,6 +10,8 @@ import {
   Droplets,
   Zap,
   ShieldCheck,
+  ChevronDown,
+  ChevronUp,
 } from 'lucide-react';
 
 interface ServiceGroupCardProps {
@@ -17,6 +19,7 @@ interface ServiceGroupCardProps {
   selectedItems: SelectedServiceItem[];
   onToggleItem: (item: ServiceItem, group: ServiceGroup) => void;
   onUpdateQuantity: (itemId: string, delta: number) => void;
+  defaultExpanded?: boolean;
 }
 
 export const ServiceGroupCard: React.FC<ServiceGroupCardProps> = ({
@@ -24,7 +27,14 @@ export const ServiceGroupCard: React.FC<ServiceGroupCardProps> = ({
   selectedItems,
   onToggleItem,
   onUpdateQuantity,
+  defaultExpanded = true,
 }) => {
+  const [isExpanded, setIsExpanded] = useState<boolean>(defaultExpanded);
+
+  const selectedCount = group.items.filter((item) =>
+    selectedItems.some((s) => s.itemId === item.id)
+  ).length;
+
   const getTheme = () => {
     switch (group.colorTheme) {
       case 'blue':
@@ -104,20 +114,40 @@ export const ServiceGroupCard: React.FC<ServiceGroupCardProps> = ({
 
   return (
     <div
-      className={`bg-white rounded-2xl border transition-all duration-200 hover:shadow-lg overflow-hidden flex flex-col justify-between ${theme.border}`}
+      className={`bg-white rounded-2xl border transition-all duration-200 hover:shadow-lg overflow-hidden flex flex-col justify-between ${
+        theme.border
+      } ${selectedCount > 0 ? 'ring-2 ring-teal-500/20' : ''}`}
     >
-      {/* Group Card Header */}
-      <div className={`p-5 bg-gradient-to-b ${theme.header} border-b border-slate-100`}>
+      {/* Group Card Header (Clickable Accordion) */}
+      <button
+        type="button"
+        onClick={() => setIsExpanded(!isExpanded)}
+        className={`w-full text-left p-4 sm:p-5 bg-gradient-to-b ${theme.header} border-b border-slate-100 cursor-pointer select-none transition hover:opacity-95 focus:outline-none`}
+        aria-expanded={isExpanded}
+      >
         <div className="flex items-center justify-between gap-2 mb-1.5">
-          <span className="font-extrabold text-xs uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
-            <span className={`w-2 h-2 rounded-full ${theme.dot}`}></span>
-            Nhóm {group.groupNumber}
-          </span>
-          {group.badge && (
-            <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${theme.badge}`}>
-              {group.badge}
+          <div className="flex items-center gap-2">
+            <span className="font-extrabold text-xs uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
+              <span className={`w-2 h-2 rounded-full ${theme.dot}`}></span>
+              Nhóm {group.groupNumber}
             </span>
-          )}
+            {selectedCount > 0 && (
+              <span className="bg-teal-600 text-white text-[11px] font-black px-2 py-0.5 rounded-full shadow-2xs">
+                Đã chọn {selectedCount}
+              </span>
+            )}
+          </div>
+
+          <div className="flex items-center gap-2">
+            {group.badge && (
+              <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${theme.badge}`}>
+                {group.badge}
+              </span>
+            )}
+            <div className="w-7 h-7 rounded-lg bg-white/70 border border-slate-200 flex items-center justify-center text-slate-600">
+              {isExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+            </div>
+          </div>
         </div>
 
         <h3 className="font-bold text-base text-slate-900 leading-snug">
@@ -125,13 +155,21 @@ export const ServiceGroupCard: React.FC<ServiceGroupCardProps> = ({
         </h3>
         <p className="text-xs text-slate-600 font-medium mt-0.5">{group.subtitle}</p>
 
-        <p className="text-[11px] text-slate-500 mt-2 italic leading-relaxed">
-          "{group.description}"
-        </p>
-      </div>
+        {isExpanded ? (
+          <p className="text-[11px] text-slate-500 mt-2 italic leading-relaxed">
+            "{group.description}"
+          </p>
+        ) : (
+          <div className="mt-2 text-[11px] font-semibold text-teal-700 flex items-center gap-1">
+            <span>{group.items.length} dịch vụ trong nhóm</span>
+            <span>• Chạm để xem chi tiết</span>
+          </div>
+        )}
+      </button>
 
-      {/* Items in this group */}
-      <div className="p-4 space-y-2.5 flex-1">
+      {/* Items in this group (Collapsible) */}
+      {isExpanded && (
+        <div className="p-3.5 sm:p-4 space-y-2.5 flex-1 animate-in fade-in duration-150">
         {group.items.map((item) => {
           const selected = selectedItems.find((s) => s.itemId === item.id);
           const isSelected = !!selected;
@@ -203,7 +241,8 @@ export const ServiceGroupCard: React.FC<ServiceGroupCardProps> = ({
             </div>
           );
         })}
-      </div>
+        </div>
+      )}
     </div>
   );
 };

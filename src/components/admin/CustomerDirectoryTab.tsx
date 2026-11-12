@@ -75,9 +75,9 @@ export const CustomerDirectoryTab: React.FC = () => {
             placeholder="Tìm theo Họ tên, SĐT, Quận/Huyện, Địa chỉ..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full text-xs font-medium text-slate-800 bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2 pl-9 focus:ring-2 focus:ring-purple-500/30"
+            className="w-full text-base sm:text-xs font-medium text-slate-800 bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2 pl-9 focus:ring-2 focus:ring-purple-500/30"
           />
-          <Search className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
+          <Search className="w-4 h-4 text-slate-400 absolute left-3 top-3 sm:top-2.5" />
         </div>
 
         <span className="text-xs text-slate-500 font-medium">

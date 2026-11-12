@@ -284,33 +284,45 @@ export const PatientView: React.FC = () => {
         <MedicalHistoryTab />
       )}
 
-      {/* STICKY BOTTOM BAR: TỰ ĐỘNG TÍNH KHOẢNG "CHI PHÍ DỰ KIẾN" Ở CUỐI MÀN HÌNH (Required by user) */}
+      {/* STICKY BOTTOM BAR: TỰ ĐỘNG TÍNH KHOẢNG "CHI PHÍ DỰ KIẾN" Ở CUỐI MÀN HÌNH (Tối ưu Mobile UX) */}
       {activeTab === 'services' && (
-        <div className="fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-slate-200/90 shadow-2xl py-3.5 px-4 sm:px-6">
-          <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3">
-            {/* Left: Selected count & list */}
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-teal-50 text-teal-700 flex items-center justify-center font-bold">
-                <Droplets className="w-5 h-5 text-teal-600" />
+        <div className="fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-slate-200/90 shadow-2xl py-2.5 sm:py-3.5 px-3 sm:px-6">
+          <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5 sm:gap-4">
+            {/* Left: Selected count & mobile price */}
+            <div className="flex items-center justify-between sm:justify-start gap-3">
+              <div className="flex items-center gap-2.5">
+                <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-teal-50 text-teal-700 flex items-center justify-center font-bold shrink-0">
+                  <Droplets className="w-5 h-5 text-teal-600" />
+                </div>
+                <div className="min-w-0">
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-[11px] sm:text-xs font-semibold text-slate-500">Đã chọn:</span>
+                    <span className="bg-teal-100 text-teal-800 text-[11px] sm:text-xs font-extrabold px-2 py-0.5 rounded-full">
+                      {selectedServices.length} mục
+                    </span>
+                  </div>
+                  <div className="text-[11px] text-slate-400 truncate max-w-[170px] sm:max-w-xs md:max-w-md hidden xs:block">
+                    {selectedServices.length === 0
+                      ? 'Chưa chọn dịch vụ'
+                      : selectedServices.map((s) => `${s.name} (x${s.quantity})`).join(', ')}
+                  </div>
+                </div>
               </div>
-              <div>
-                <div className="flex items-center gap-2">
-                  <span className="text-xs font-semibold text-slate-600">Đã chọn:</span>
-                  <span className="bg-teal-100 text-teal-800 text-xs font-extrabold px-2 py-0.5 rounded-full">
-                    {selectedServices.length} dịch vụ / thuốc
-                  </span>
-                </div>
-                <div className="text-[11px] text-slate-400 truncate max-w-xs sm:max-w-md mt-0.5">
-                  {selectedServices.length === 0
-                    ? 'Chưa chọn dịch vụ nào'
-                    : selectedServices.map((s) => `${s.name} (x${s.quantity})`).join(', ')}
-                </div>
+
+              {/* Price on mobile screen */}
+              <div className="text-right sm:hidden">
+                <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider block">
+                  Dự kiến:
+                </span>
+                <span className="text-base font-black text-emerald-700">
+                  {estimatedDisplay}
+                </span>
               </div>
             </div>
 
-            {/* Right: Estimated Cost & Order Action */}
-            <div className="flex items-center gap-4">
-              <div className="text-right">
+            {/* Right: Desktop Estimated Cost & Min 48px Action Button */}
+            <div className="flex items-center justify-between sm:justify-end gap-3 sm:gap-4">
+              <div className="text-right hidden sm:block">
                 <span className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider block">
                   Chi phí dự kiến:
                 </span>
@@ -322,10 +334,10 @@ export const PatientView: React.FC = () => {
               <button
                 onClick={() => setShowBookingModal(true)}
                 disabled={selectedServices.length === 0}
-                className="bg-gradient-to-r from-teal-600 via-sky-600 to-indigo-700 hover:from-teal-700 hover:to-indigo-800 disabled:opacity-50 text-white font-extrabold text-xs sm:text-sm py-3 px-5 sm:px-7 rounded-2xl shadow-lg transition flex items-center gap-2 cursor-pointer"
+                className="w-full sm:w-auto min-h-[48px] h-12 bg-gradient-to-r from-teal-600 via-sky-600 to-indigo-700 hover:from-teal-700 hover:to-indigo-800 disabled:opacity-50 text-white font-extrabold text-sm sm:text-base px-6 rounded-xl sm:rounded-2xl shadow-lg transition flex items-center justify-center gap-2 cursor-pointer active:scale-98"
               >
                 <CalendarCheck className="w-4 h-4" />
-                <span>Tiến hành đặt lịch</span>
+                <span>Tiếp tục đặt lịch</span>
                 <ChevronRight className="w-4 h-4" />
               </button>
             </div>
