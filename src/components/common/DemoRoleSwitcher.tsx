@@ -29,6 +29,8 @@ export const DemoRoleSwitcher: React.FC = () => {
     setActiveZnsModal,
     resetToDefaultData,
     hotlinePhone,
+    isAdminUnlocked,
+    lockAdmin,
   } = useApp();
 
   const activePatient = patients.find((p) => p.id === activePatientId) || patients[0];
@@ -92,12 +94,10 @@ export const DemoRoleSwitcher: React.FC = () => {
 
           <button
             onClick={() => {
-              if (window.confirm('Khôi phục 9 nhóm dịch vụ truyền dịch tại nhà Cần Thơ về mặc định?')) {
-                resetToDefaultData();
-              }
+              resetToDefaultData();
             }}
             className="flex items-center gap-1 text-slate-300 hover:text-white text-xs px-2 py-1 rounded transition hover:bg-white/10 cursor-pointer"
-            title="Khôi phục trạng thái ban đầu"
+            title="Khôi phục trạng thái mặc định ban đầu"
           >
             <RotateCcw className="w-3 h-3" />
             <span className="hidden sm:inline">Reset</span>
@@ -217,8 +217,19 @@ export const DemoRoleSwitcher: React.FC = () => {
 
           {role === 'admin' && (
             <div className="flex items-center gap-2 bg-slate-800/80 px-2.5 py-1.5 rounded-lg border border-slate-700 text-purple-300 font-medium">
-              <span className="w-2 h-2 rounded-full bg-purple-400 animate-pulse"></span>
-              <span>Điều phối viên Trung tâm Cần Thơ</span>
+              <span className={`w-2 h-2 rounded-full ${isAdminUnlocked ? 'bg-emerald-400' : 'bg-amber-400 animate-pulse'}`} />
+              <span className="text-xs">{isAdminUnlocked ? 'Admin đã mở khóa' : 'Đang khóa bảo mật'}</span>
+              {isAdminUnlocked && (
+                <button
+                  type="button"
+                  onClick={lockAdmin}
+                  className="ml-1 p-1 hover:bg-rose-500/20 text-rose-300 rounded text-[11px] font-bold flex items-center gap-1 cursor-pointer"
+                  title="Khóa bảo mật Admin"
+                >
+                  <Lock className="w-3 h-3" />
+                  <span>Khóa</span>
+                </button>
+              )}
             </div>
           )}
         </div>

@@ -11,6 +11,7 @@ import {
   ZnsNotification,
   AppointmentStatus,
   CAN_THO_DISTRICTS,
+  TrustedDevice,
 } from '../types';
 import {
   INITIAL_SERVICE_GROUPS,
@@ -21,6 +22,7 @@ import {
   INITIAL_ZNS_NOTIFICATIONS,
 } from '../mock/data';
 import { formatVND } from '../utils/formatters';
+import { INITIAL_ADMIN_HASH, hashPassword, verifyPassword } from '../utils/security';
 
 interface AppContextType {
   role: UserRole;
@@ -35,6 +37,18 @@ interface AppContextType {
   appointments: Appointment[];
   patients: PatientProfile[];
   doctors: Doctor[];
+  addDoctor: (data: Omit<Doctor, 'id'>) => Doctor;
+  updateDoctor: (doctor: Doctor) => void;
+  deleteDoctor: (doctorId: string) => { success: boolean; message: string };
+  // Admin Security & Device Management
+  isAdminUnlocked: boolean;
+  unlockAdmin: (password: string) => Promise<{ success: boolean; message?: string }>;
+  lockAdmin: () => void;
+  changeAdminPassword: (currentPassword: string, newPassword: string) => Promise<{ success: boolean; message: string }>;
+  updateAdminPin: (oldPin: string, newPin: string) => Promise<{ success: boolean; message: string }>;
+  trustedDevices: TrustedDevice[];
+  toggleApproveDevice: (deviceId: string) => void;
+  lastAdminUnlockTime: string | null;
   medicalRecords: MedicalRecord[];
   znsNotifications: ZnsNotification[];
   activeZnsModal: ZnsNotification | null;
@@ -103,7 +117,46 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     return saved ? JSON.parse(saved) : INITIAL_PATIENTS;
   });
 
-  const [doctors] = useState<Doctor[]>(INITIAL_DOCTORS);
+  const [doctors, setDoctors] = useState<Doctor[]>(() => {
+    const saved = localStorage.getItem(STORAGE_KEY_PREFIX + 'doctors');
+    return saved ? JSON.parse(saved) : INITIAL_DOCTORS;
+  });
+
+  // Admin Security Password Hash (SHA-256) & Device Authorization
+  const [adminPasswordHash, setAdminPasswordHash] = useState<string>(() => {
+    return localStorage.getItem(STORAGE_KEY_PREFIX + 'admin_pwd_hash') || INITIAL_ADMIN_HASH;
+  });
+
+  const [isAdminUnlocked, setIsAdminUnlocked] = useState<boolean>(() => {
+    return sessionStorage.getItem(STORAGE_KEY_PREFIX + 'admin_unlocked') === 'true';
+  });
+
+  const [lastAdminUnlockTime, setLastAdminUnlockTime] = useState<string | null>(() => {
+    return localStorage.getItem(STORAGE_KEY_PREFIX + 'admin_last_unlock') || null;
+  });
+
+  const [trustedDevices, setTrustedDevices] = useState<TrustedDevice[]>(() => {
+    const saved = localStorage.getItem(STORAGE_KEY_PREFIX + 'devices');
+    if (saved) return JSON.parse(saved);
+    return [
+      {
+        id: 'DEV-CANTHO-01',
+        name: 'Thiết bị Quản trị Trưởng kíp (Cần Thơ)',
+        browser: 'Safari Mobile / Chrome Desktop',
+        ip: '113.161.88.x (TP. Cần Thơ)',
+        isApproved: true,
+        lastActive: 'Vừa xong',
+      },
+      {
+        id: 'DEV-CANTHO-02',
+        name: 'Máy tính bảng Bác sĩ Khám lưu động',
+        browser: 'iPadOS / Safari',
+        ip: '14.169.210.x (Viettel 4G Cần Thơ)',
+        isApproved: true,
+        lastActive: '1 giờ trước',
+      },
+    ];
+  });
 
   const [medicalRecords, setMedicalRecords] = useState<MedicalRecord[]>(() => {
     const saved = localStorage.getItem(STORAGE_KEY_PREFIX + 'records');
@@ -143,12 +196,118 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   }, [patients]);
 
   useEffect(() => {
+    localStorage.setItem(STORAGE_KEY_PREFIX + 'doctors', JSON.stringify(doctors));
+  }, [doctors]);
+
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEY_PREFIX + 'admin_pwd_hash', adminPasswordHash);
+  }, [adminPasswordHash]);
+
+  useEffect(() => {
+    sessionStorage.setItem(STORAGE_KEY_PREFIX + 'admin_unlocked', String(isAdminUnlocked));
+  }, [isAdminUnlocked]);
+
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEY_PREFIX + 'devices', JSON.stringify(trustedDevices));
+  }, [trustedDevices]);
+
+  useEffect(() => {
     localStorage.setItem(STORAGE_KEY_PREFIX + 'records', JSON.stringify(medicalRecords));
   }, [medicalRecords]);
 
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY_PREFIX + 'zns', JSON.stringify(znsNotifications));
   }, [znsNotifications]);
+
+  // Doctor CRUD Operations
+  const addDoctor = (data: Omit<Doctor, 'id'>): Doctor => {
+    const newId = `doc-${Date.now()}`;
+    const newDoc: Doctor = {
+      ...data,
+      id: newId,
+    };
+    setDoctors((prev) => [...prev, newDoc]);
+    return newDoc;
+  };
+
+  const updateDoctor = (updatedDoc: Doctor) => {
+    setDoctors((prev) => prev.map((d) => (d.id === updatedDoc.id ? updatedDoc : d)));
+  };
+
+  const deleteDoctor = (doctorId: string): { success: boolean; message: string } => {
+    if (doctorId === 'doc-phuc') {
+      return { success: false, message: 'Không thể xóa BS. Phúc vì đây là Bác sĩ Trưởng kíp Y khoa phụ trách chuyên môn!' };
+    }
+    const hasAssigned = appointments.some(
+      (a) => a.doctorId === doctorId && a.status !== 'completed' && a.status !== 'cancelled'
+    );
+    if (hasAssigned) {
+      return { success: false, message: 'Bác sĩ này đang được phân công ca truyền chưa hoàn tất. Vui lòng chuyển giao ca trước khi xóa!' };
+    }
+    setDoctors((prev) => prev.filter((d) => d.id !== doctorId));
+    if (activeDoctorId === doctorId) {
+      setActiveDoctorId('doc-phuc');
+    }
+    return { success: true, message: 'Đã xóa bác sĩ khỏi danh sách phụ trách.' };
+  };
+
+  // Admin Security Lock Operations (SHA-256 Protected)
+  const unlockAdmin = async (password: string): Promise<{ success: boolean; message?: string }> => {
+    const isCorrect = await verifyPassword(password, adminPasswordHash);
+    if (isCorrect) {
+      setIsAdminUnlocked(true);
+      const nowStr = new Date().toLocaleTimeString('vi-VN') + ' ' + new Date().toLocaleDateString('vi-VN');
+      setLastAdminUnlockTime(nowStr);
+      localStorage.setItem(STORAGE_KEY_PREFIX + 'admin_last_unlock', nowStr);
+      return { success: true };
+    }
+    return { success: false, message: 'Mật khẩu quản trị không chính xác. Vui lòng kiểm tra lại!' };
+  };
+
+  const lockAdmin = () => {
+    setIsAdminUnlocked(false);
+    sessionStorage.removeItem(STORAGE_KEY_PREFIX + 'admin_unlocked');
+  };
+
+  const changeAdminPassword = async (
+    currentPassword: string,
+    newPassword: string
+  ): Promise<{ success: boolean; message: string }> => {
+    const isCurrentValid = await verifyPassword(currentPassword, adminPasswordHash);
+    if (!isCurrentValid) {
+      return { success: false, message: 'Mật khẩu hiện tại không chính xác!' };
+    }
+    if (!newPassword || newPassword.length < 6) {
+      return { success: false, message: 'Mật khẩu mới phải có độ dài ít nhất 6 ký tự!' };
+    }
+    if (newPassword === currentPassword) {
+      return { success: false, message: 'Mật khẩu mới không được trùng với mật khẩu hiện tại!' };
+    }
+
+    const newHash = await hashPassword(newPassword);
+    setAdminPasswordHash(newHash);
+    localStorage.setItem(STORAGE_KEY_PREFIX + 'admin_pwd_hash', newHash);
+
+    // Save notification flag for LockScreen so user gets a friendly confirmation
+    sessionStorage.setItem(STORAGE_KEY_PREFIX + 'pwd_just_changed', 'true');
+
+    // Automatically lock current Admin session to verify login with new password
+    setIsAdminUnlocked(false);
+    sessionStorage.removeItem(STORAGE_KEY_PREFIX + 'admin_unlocked');
+
+    return {
+      success: true,
+      message: 'Đã đổi mật khẩu Admin thành công! Phiên làm việc đã tự động khóa. Vui lòng đăng nhập lại bằng mật khẩu mới.',
+    };
+  };
+
+  const updateAdminPin = changeAdminPassword;
+
+  const toggleApproveDevice = (deviceId: string) => {
+    setTrustedDevices((prev) =>
+      prev.map((d) => (d.id === deviceId ? { ...d, isApproved: !d.isApproved } : d))
+    );
+  };
 
   // Masking helpers strictly enforced for Doctor role
   const maskPhone = (phone: string): string => {
@@ -460,11 +619,15 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     setServiceGroups(INITIAL_SERVICE_GROUPS);
     setAppointments(INITIAL_APPOINTMENTS);
     setPatients(INITIAL_PATIENTS);
+    setDoctors(INITIAL_DOCTORS);
+    setAdminPasswordHash(INITIAL_ADMIN_HASH);
+    setIsAdminUnlocked(false);
     setMedicalRecords(INITIAL_MEDICAL_RECORDS);
     setZnsNotifications(INITIAL_ZNS_NOTIFICATIONS);
     setActiveDoctorId('doc-phuc');
     setActivePatientId('pat-01');
     localStorage.clear();
+    sessionStorage.clear();
   };
 
   return (
@@ -482,6 +645,17 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         appointments,
         patients,
         doctors,
+        addDoctor,
+        updateDoctor,
+        deleteDoctor,
+        isAdminUnlocked,
+        unlockAdmin,
+        lockAdmin,
+        changeAdminPassword,
+        updateAdminPin,
+        trustedDevices,
+        toggleApproveDevice,
+        lastAdminUnlockTime,
         medicalRecords,
         znsNotifications,
         activeZnsModal,

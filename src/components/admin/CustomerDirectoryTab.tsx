@@ -20,6 +20,7 @@ export const CustomerDirectoryTab: React.FC = () => {
   const { patients, appointments } = useApp();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedPatient, setSelectedPatient] = useState<PatientProfile | null>(null);
+  const [exportNotice, setExportNotice] = useState<string | null>(null);
 
   const filteredPatients = patients.filter((p) => {
     if (!searchQuery) return true;
@@ -35,6 +36,13 @@ export const CustomerDirectoryTab: React.FC = () => {
 
   return (
     <div className="space-y-4">
+      {exportNotice && (
+        <div className="bg-emerald-600 text-white px-4 py-3 rounded-xl text-xs font-semibold flex items-center justify-between shadow-md animate-in fade-in">
+          <span>{exportNotice}</span>
+          <button onClick={() => setExportNotice(null)} className="text-white/80 hover:text-white ml-2">✕</button>
+        </div>
+      )}
+
       {/* Header Info Banner */}
       <div className="bg-gradient-to-r from-purple-900 to-indigo-900 rounded-2xl p-5 text-white shadow-md flex flex-wrap items-center justify-between gap-4">
         <div>
@@ -58,7 +66,10 @@ export const CustomerDirectoryTab: React.FC = () => {
             <span className="text-xl font-black text-white">{patients.length}</span>
           </div>
           <button
-            onClick={() => alert('Đã trích xuất danh sách khách hàng truyền dịch Cần Thơ (Excel/CSV simulation)')}
+            onClick={() => {
+              setExportNotice('Đã trích xuất danh sách khách hàng truyền dịch Cần Thơ (Excel/CSV simulation)');
+              setTimeout(() => setExportNotice(null), 4000);
+            }}
             className="bg-white/10 hover:bg-white/20 text-white text-xs font-bold px-3 py-2.5 rounded-xl border border-white/20 transition flex items-center gap-1.5 cursor-pointer"
           >
             <Download className="w-3.5 h-3.5" />

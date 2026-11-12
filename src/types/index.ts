@@ -150,6 +150,15 @@ export interface ZnsNotification {
   type: 'booking_confirmation' | 'reminder' | 'actual_fee_confirmed';
 }
 
+export interface TrustedDevice {
+  id: string;
+  name: string;
+  browser: string;
+  ip: string;
+  isApproved: boolean;
+  lastActive: string;
+}
+
 export const CAN_THO_DISTRICTS = [
   'Quận Ninh Kiều',
   'Quận Cái Răng',

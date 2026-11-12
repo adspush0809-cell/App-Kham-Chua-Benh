@@ -28,6 +28,7 @@ export const PatientView: React.FC = () => {
     appointments,
     activePatientId,
     patients,
+    doctors,
     hotlinePhone,
   } = useApp();
 
@@ -277,6 +278,76 @@ export const PatientView: React.FC = () => {
                 <h4 className="font-bold text-slate-900 mb-1">Theo Dõi Suốt Quá Trình</h4>
                 <p>Cán bộ y tế túc trực bên cạnh giường bệnh để điều chỉnh tốc độ giọt và xử trí tức thời nếu có mệt mỏi.</p>
               </div>
+            </div>
+          </div>
+
+          {/* Medical Team Showcase (Dynamic Doctors & Avatars) */}
+          <div className="bg-white rounded-3xl border border-slate-200 p-6 sm:p-8 shadow-xs space-y-6">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div>
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-teal-50 text-teal-800 text-xs font-bold mb-1.5 border border-teal-200/60">
+                  <Stethoscope className="w-3.5 h-3.5 text-teal-600" />
+                  <span>Kíp Y Khoa Lưu Động Cần Thơ</span>
+                </div>
+                <h3 className="text-lg sm:text-xl font-black text-slate-900">
+                  Đội Ngũ Bác Sĩ &amp; Cán Bộ Y Tế Phụ Trách
+                </h3>
+                <p className="text-xs text-slate-500 mt-0.5">
+                  100% bác sĩ và điều dưỡng có chứng chỉ hành nghề, giàu kinh nghiệm cấp cứu &amp; điều trị.
+                </p>
+              </div>
+
+              <a
+                href={`tel:${hotlinePhone}`}
+                className="inline-flex items-center gap-2 px-4 py-2.5 bg-rose-500 hover:bg-rose-600 text-white rounded-2xl text-xs font-bold transition shadow-sm self-start sm:self-center"
+              >
+                <PhoneCall className="w-3.5 h-3.5" />
+                <span>Liên hệ BS. Phúc: {hotlinePhone}</span>
+              </a>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {doctors.map((doc) => (
+                <div
+                  key={doc.id}
+                  className={`p-4 rounded-2xl border transition-all ${
+                    doc.id === 'doc-phuc'
+                      ? 'border-teal-400 bg-gradient-to-br from-teal-50/40 via-white to-sky-50/30 shadow-xs ring-1 ring-teal-500/20'
+                      : 'border-slate-200 bg-white hover:border-slate-300'
+                  }`}
+                >
+                  <div className="flex items-center gap-3.5">
+                    <img
+                      src={doc.avatar}
+                      alt={doc.name}
+                      className="w-14 h-14 rounded-2xl object-cover border-2 border-slate-100 shadow-2xs shrink-0"
+                    />
+                    <div className="min-w-0">
+                      <div className="flex items-center gap-1.5">
+                        <h4 className="font-bold text-slate-900 text-sm truncate">{doc.name}</h4>
+                        {doc.id === 'doc-phuc' && (
+                          <span className="bg-teal-600 text-white text-[9px] font-black px-1.5 py-0.2 rounded-full uppercase">
+                            Trưởng kíp
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-xs font-semibold text-teal-700 mt-0.5">{doc.title}</p>
+                      <p className="text-[11px] text-slate-500 truncate mt-0.5">{doc.specialty}</p>
+                    </div>
+                  </div>
+
+                  <div className="mt-3 pt-2.5 border-t border-slate-100 flex items-center justify-between text-xs">
+                    <span className="text-[11px] text-slate-500 truncate max-w-[170px]">{doc.experience}</span>
+                    <a
+                      href={`tel:${doc.phone}`}
+                      className="font-bold text-teal-700 hover:text-teal-800 text-[11px] flex items-center gap-1"
+                    >
+                      <PhoneCall className="w-3 h-3 text-teal-600" />
+                      <span>{doc.phone}</span>
+                    </a>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         </div>

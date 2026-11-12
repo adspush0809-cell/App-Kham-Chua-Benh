@@ -291,6 +291,22 @@ export const AppointmentManagerTab: React.FC = () => {
                           </option>
                         ))}
                       </select>
+                      {apt.doctorId && (() => {
+                        const assignedDoc = doctors.find((d) => d.id === apt.doctorId);
+                        if (!assignedDoc) return null;
+                        return (
+                          <div className="flex items-center gap-2 mt-1.5 p-1.5 bg-teal-50/80 rounded-lg border border-teal-200/70">
+                            <img
+                              src={assignedDoc.avatar}
+                              alt={assignedDoc.name}
+                              className="w-6 h-6 rounded-full object-cover border border-teal-500 shrink-0"
+                            />
+                            <span className="text-[11px] font-bold text-teal-900 truncate">
+                              {assignedDoc.name} • {assignedDoc.phone}
+                            </span>
+                          </div>
+                        );
+                      })()}
                     </div>
 
                     {/* Action buttons */}

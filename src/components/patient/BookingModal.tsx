@@ -50,9 +50,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({
   onClose,
   onSuccess,
 }) => {
-  const { bookAppointment, patients, activePatientId, hotlinePhone } = useApp();
-
-  const currentPatient = patients.find((p) => p.id === activePatientId);
+  const { bookAppointment, hotlinePhone } = useApp();
 
   // Tomorrow's date default
   const tomorrow = new Date();
@@ -62,16 +60,16 @@ export const BookingModal: React.FC<BookingModalProps> = ({
   const [services, setServices] = useState<SelectedServiceItem[]>(initialServices);
   const [date, setDate] = useState<string>(defaultDateStr);
   const [timeSlot, setTimeSlot] = useState<string>(TIME_SLOTS[1]);
-  const [fullName, setFullName] = useState<string>(currentPatient?.fullName || '');
-  const [phone, setPhone] = useState<string>(currentPatient?.phone || '');
-  const [district, setDistrict] = useState<string>(currentPatient?.district || CAN_THO_DISTRICTS[0]);
-  const [address, setAddress] = useState<string>(currentPatient?.address || '');
-  const [birthYear, setBirthYear] = useState<number>(currentPatient?.birthYear || 1990);
-  const [gender, setGender] = useState<'Nam' | 'Nữ' | 'Khác'>(currentPatient?.gender || 'Nam');
+  const [fullName, setFullName] = useState<string>('');
+  const [phone, setPhone] = useState<string>('');
+  const [district, setDistrict] = useState<string>(CAN_THO_DISTRICTS[0]);
+  const [address, setAddress] = useState<string>('');
+  const [birthYear, setBirthYear] = useState<string>('');
+  const [gender, setGender] = useState<'Nam' | 'Nữ' | 'Khác'>('Nam');
   const [symptoms, setSymptoms] = useState<string>('');
-  const [medicalHistory, setMedicalHistory] = useState<string>(currentPatient?.medicalHistory || '');
-  const [allergyHistory, setAllergyHistory] = useState<string>(currentPatient?.allergyHistory || '');
-  const [currentMedications, setCurrentMedications] = useState<string>(currentPatient?.currentMedications || '');
+  const [medicalHistory, setMedicalHistory] = useState<string>('');
+  const [allergyHistory, setAllergyHistory] = useState<string>('');
+  const [currentMedications, setCurrentMedications] = useState<string>('');
   const [errorMessage, setErrorMessage] = useState<string>('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -114,6 +112,10 @@ export const BookingModal: React.FC<BookingModalProps> = ({
     }
     if (!address.trim()) {
       setErrorMessage('Vui lòng nhập số nhà, tên đường, phường/xã để bác sĩ đến tận nơi.');
+      return;
+    }
+    if (!birthYear.trim() || isNaN(Number(birthYear)) || Number(birthYear) < 1920 || Number(birthYear) > 2026) {
+      setErrorMessage('Vui lòng nhập năm sinh hợp lệ của người bệnh (VD: 1985).');
       return;
     }
     if (!date) {
@@ -362,15 +364,19 @@ export const BookingModal: React.FC<BookingModalProps> = ({
 
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                   <div>
-                    <label className="block text-xs text-slate-600 mb-1 font-semibold">Năm sinh:</label>
+                    <label className="block text-xs text-slate-600 mb-1 font-semibold">
+                      Năm sinh <span className="text-rose-500">*</span>:
+                    </label>
                     <input
                       type="number"
                       inputMode="numeric"
                       pattern="[0-9]*"
                       min={1920}
                       max={2026}
+                      placeholder="Ví dụ: 1985"
                       value={birthYear}
-                      onChange={(e) => setBirthYear(Number(e.target.value))}
+                      onChange={(e) => setBirthYear(e.target.value)}
+                      required
                       className="w-full text-base font-medium text-slate-800 bg-white border border-slate-300 rounded-xl px-3 py-2.5 focus:ring-2 focus:ring-teal-500/30"
                     />
                   </div>
